@@ -99,11 +99,34 @@ git branch branchName
 
 ```bash
 git checkout branchName
-git checkout -b branchName # 创建并切换分支
+git checkout -b branchName  # 创建并切换分支
 ```
 
-合并分支
+**合并分支**
 
 ```bash
+git merge branchName
+```
+
+**解决冲突**
+
+两个分支对文件的修改可能存在冲突，这时就需要手动解决冲突。解决冲突步骤如下：处理文件中冲突的地方；将解决完冲突的文件加入暂存区；提交。
+
+**删除分支**
+
+```bash
+git branch -d branchName
+git branch -D branchName  # 强制删除
+```
+
+
+
+## 远程仓库
+
+配置本地仓库对应的远程仓库地址
+
+```bash
+# git remote add origin git@github.com:Ruijin-Shen/gitTest.git
+git remote add <remoteName> <path>
 ```
 
