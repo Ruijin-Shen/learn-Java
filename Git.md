@@ -130,3 +130,30 @@ git branch -D branchName  # 强制删除
 git remote add <remoteName> <path>
 ```
 
+查看远程仓库
+
+```bash
+git remote -vv
+```
+
+**推送至远程仓库**
+
+```bash
+git push [-f] [--set-upstream] [remoteName [localBranchName][:remoteBranchName]]
+git push origin master  # 本地分支名与远程分支名相同，可省略远程分支名
+git push -f origin master  # 强制覆盖
+git push --set-upstream origin master:master  # 推送到远端的同时建立远端分支和本地分支的关联关系
+```
+
+查看本地分支与远程分支的关联关系
+
+```bash
+git branch -vv
+```
+
+**从远程仓库克隆**
+
+```bash
+git clone <url> [localDirPath]
+```
+
