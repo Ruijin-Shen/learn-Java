@@ -157,3 +157,18 @@ git branch -vv
 git clone <url> [localDirPath]
 ```
 
+**从远程仓库抓取**
+
+抓取指令将远程仓库的更新抓取到本地，不会进行合并
+
+```bash
+git fetch [remoteName] [branchName]  # 如果不指定远端名称和分支名，则抓取所有分支
+```
+
+**从远程仓库拉取**
+
+拉取指令将远程仓库的更新抓取到本地并自动进行合并
+
+```bash
+git pull [remoteName] [branchName]  # 如果不指定远端名称和分支名，则拉取当前分支
+```
