@@ -1,9 +1,3 @@
-## HTTP协议
-
-
-
-
-
 ## Maven
 
 Maven基于**项目对象模型**（POM，Project Object Model）用于管理和构建java项目。Maven能够：（**依赖管理**）方便快捷地管理项目依赖的资源，避免版本冲突问题；（**统一项目结构**）提供标准、统一的项目结构；（**项目构建**）Maven提供了标准的跨平台的自动化项目构建方式。
@@ -18,7 +12,7 @@ Maven基于**项目对象模型**（POM，Project Object Model）用于管理和
 
 - 构建生命周期/阶段(Build lifecycle & phases)：完成标准化构建流程。
 
-![24032301](.\resources\24032301.png)
+![24032301](./resources/24032301.png)
 
 ## 过滤器和拦截器
 
@@ -141,7 +135,7 @@ public class WebConfig implements WebMvcConfigurer {
 
 #### 2.3 拦截器执行流程
 
-![24032401](.\resources\24032401.png)
+![24032401](./resources/24032401.png)
 
 当我们打开浏览器访问部署在web服务器中的web应用时，此时所定义的过滤器会拦截到这次请求。拦截到这次请求之后，它会先执行放行前逻辑，然后再执行放行操作。由于我们是基于Spring Boot开发，所以放行之后是进入到了Spring的环境当中，也就是访问controller当中的接口方法。
 
