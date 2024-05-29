@@ -37,13 +37,13 @@ Thrift的**结构体**定义了跨语言使用的通用对象。结构体有一�
 
 ```idl
 struct User {
-	1:i32 id,
-	2:string name="thrifty",
+    1:i32 id,
+    2:string name="thrifty",
 }
 
 struct Example {
-	1:i32 number=10,
-	2:map<string, User> usermap
+    1:i32 number=10,
+    2:map<string, User> usermap
 }
 ```
 
@@ -57,8 +57,8 @@ struct Example {
 
 ```idl
 enum HttpStatus {
-	OK=200,
-	NOTFOUND=404
+    OK=200,
+    NOTFOUND=404
 }
 ```
 
@@ -72,14 +72,14 @@ Thrift编译器会根据服务定义生成全功能客户端以及服务端桩�
 
 ```idl
 service <name> {
-	<returntype> <name>(<arguments>) [throws (<exceptions>)]
-	...
+    <returntype> <name>(<arguments>) [throws (<exceptions>)]
+    ...
 }
 
 service StringCache {
-	void set(1:i32 key, 2:string value),
-	string get(1:i32 key) throws (1:KeyNotFound knf),
-	void delete(1:i32 key)
+    void set(1:i32 key, 2:string value),
+    string get(1:i32 key) throws (1:KeyNotFound knf),
+    void delete(1:i32 key)
 }
 ```
 
@@ -87,6 +87,144 @@ service StringCache {
 
 
 
-## 2. 传输（Transport）
+## 2. Thrift快速开始程序
+
+### 2.1 引入Thrift依赖
+
+```xml
+<dependency>
+    <groupId>org.apache.thrift</groupId>
+    <artifactId>libthrift</artifactId>
+    <version>0.15.0</version>
+    <scope>compile</scope>
+</dependency>
+```
+
+### 2.2 编写`user.thrift`文件
+
+```idl
+namespace java org.example
+
+struct User {
+    1:i32 id,
+    2:string name
+}
+
+service UserService {
+    bool addUser(1:User user),
+    bool containsUser(1:i32 id),
+    User getUserById(1:i32 id)
+}
+```
+
+### 2.3 编译`user.thrift`文件
+
+```bash
+thrift -r -out src/main/java -gen java src/main/resources/thrift/user.thrift
+```
+
+### 2.4 实现服务端
+
+类`UserServiceImpl`对`user.thrift`文件中定义的服务进行实现（实现`UserService.Iface`接口）。
+
+```Java
+public class UserServiceImpl implements UserService.Iface {
+    private final ConcurrentHashMap<Integer, User> table = new ConcurrentHashMap<>();
+
+    @Override
+    public boolean addUser(User user) throws TException {
+        System.out.println("method addUser is called");
+        boolean result = !table.containsKey(user.getId());
+        table.put(user.getId(), user);
+        return result;
+    }
+
+    @Override
+    public boolean containsUser(int id) throws TException {
+        System.out.println("method containsUser is called");
+        return table.containsKey(id);
+    }
+
+    @Override
+    public User getUserById(int id) throws TException {
+        System.out.println("method getUserById is called");
+        return table.get(id);
+    }
+}
+```
+
+服务端`Server`
+
+```Java
+public class Server {
+    public static void main(String[] args) {
+        try {
+            TServerTransport serverTransport = new TServerSocket(9090);
+            UserService.Processor<UserServiceImpl> processor = new UserService.Processor<>(new UserServiceImpl());
+            TBinaryProtocol.Factory protocolFactory = new TBinaryProtocol.Factory();
+
+            TSimpleServer.Args targs = new TSimpleServer.Args(serverTransport);
+            targs.processor(processor);
+            targs.protocolFactory(protocolFactory);
+
+            // Simple single-threaded server for testing
+            TServer server = new TSimpleServer(targs);
+            System.out.println("Starting the TSimpleServer server.");
+            server.serve();
+        } catch (TTransportException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
+
+### 2.5 客户端进行远程过程调用
+
+客户端`Client`
+
+```Java
+public class Client {
+    public static void main(String[] args) {
+        TTransport transport = null;
+        try {
+            transport = new TSocket("localhost", 9090);
+            TProtocol protocol = new TBinaryProtocol(transport);
+            UserService.Client client = new UserService.Client(protocol);
+
+            transport.open();
+            // remote procedure call
+            User alice = new User(1, "Alice");
+            boolean isSuccess = false;
+            isSuccess = client.addUser(alice);
+            System.out.println("Insterting " + alice.toString() +  (isSuccess ? " succeeds" : " failed"));
+
+            isSuccess = client.addUser(alice);
+            System.out.println("Insterting " + alice.toString() +  (isSuccess ? " succeeds" : " failed"));
+
+            System.out.println("User " + alice.toString() + (client.containsUser(alice.getId()) ? " exists" : " does not exists"));
+            User bob = new User(2, "Bob");
+            System.out.println("User " + bob.toString() + (client.containsUser(bob.getId()) ? " exists" : " does not exist"));
+
+            User result = client.getUserById(1);
+            System.out.println("User with id 1: " + result);
+        } catch (TTransportException e) {
+            throw new RuntimeException(e);
+        } catch (TException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (transport != null) transport.close();
+        }
+    }
+}
+```
+
+
+
+## 3. 传输（Transport）
 
 传输层定义了数据如何在客户端和服务端之间传输。Thrift默认使用基于TCP/IP的流式传输。
+
+
+
+## 4. 协议（Protocol）
+
