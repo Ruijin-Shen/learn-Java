@@ -89,6 +89,8 @@ service StringCache {
 
 ## 2. Thrift快速开始程序
 
+快速开始程序完整代码：https://raw.githubusercontent.com/Ruijin-Shen/learn-Java/main/resources/thrift-demo.zip
+
 ### 2.1 引入Thrift依赖
 
 ```xml
