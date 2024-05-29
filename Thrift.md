@@ -68,5 +68,25 @@ enum HttpStatus {
 
 ### 1.7 服务（Service）
 
-服务的定义与在面向对象编程中定义接口的语义相同。
+Thrift编译器会根据服务定义生成全功能客户端以及服务端桩（stub）。服务的定义与在面向对象编程中定义接口的语义相同，通过如下的方式定义：
 
+```idl
+service <name> {
+	<returntype> <name>(<arguments>) [throws (<exceptions>)]
+	...
+}
+
+service StringCache {
+	void set(1:i32 key, 2:string value),
+	string get(1:i32 key) throws (1:KeyNotFound knf),
+	void delete(1:i32 key)
+}
+```
+
+可用`async`关键字修饰返回值为`void`的函数，使得函数无需等待服务端的响应。纯`void`函数会向客户端返回一个响应，以确保服务器端的操作已经完成。`async`方法调用只能保证请求在传输层（transport layer）成功。因此，只有在传输可靠或可以接受方法调用丢失的情况下才使用异步优化。
+
+
+
+## 2. Thrift的架构
+
+Thrift的架构分为如下几层：
