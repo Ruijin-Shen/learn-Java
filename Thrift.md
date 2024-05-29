@@ -68,7 +68,7 @@ enum HttpStatus {
 
 ### 1.7 服务（Service）
 
-Thrift编译器会根据服务定义生成全功能客户端以及服务端桩（stub）。服务的定义与在面向对象编程中定义接口的语义相同，通过如下的方式定义：
+Thrift编译器会根据服务定义生成全功能客户端以及服务端桩（stub）。**服务**的定义与在面向对象编程中定义接口的语义相同，通过如下的方式定义：
 
 ```idl
 service <name> {
@@ -87,6 +87,6 @@ service StringCache {
 
 
 
-## 2. Thrift的架构
+## 2. 传输（Transport）
 
-Thrift的架构分为如下几层：
+传输层定义了数据如何在客户端和服务端之间传输。Thrift默认使用基于TCP/IP的流式传输。
