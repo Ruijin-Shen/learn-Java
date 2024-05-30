@@ -8,7 +8,7 @@
 
 Redis是一个键值数据库，键一般是String类型，值的类型多种多样。值有String，Hash，List，Set和SortedSet几种类型。
 
-#### 1.1 通用命令
+### 2. 通用命令
 
 * **KEYS**：返回符合模板的所有key
 
@@ -64,3 +64,7 @@ Redis是一个键值数据库，键一般是String类型，值的类型多种多
 
   - The command returns `-2` if the key does not exist.
   - The command returns `-1` if the key exists but has no associated expire.
+
+### 3. String命令
+
+String是字符串类型，是Redis中最简单的存储类型。根据字符串的格式不同，可以分为3类：string普通字符串，int整数类型，float浮点类型。
