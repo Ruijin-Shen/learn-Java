@@ -4,13 +4,13 @@
 
 
 
-## Redis常见命令
+## 1. Redis常见命令
 
-### 1. Redis基本数据类型
+### 1.1 Redis基本数据类型
 
 Redis是一个键值数据库，键一般是String类型，值的类型多种多样。值有String，Hash，List，Set和SortedSet几种类型。
 
-### 2. 通用命令
+### 1.2 通用命令
 
 * **KEYS**：返回符合模板的所有key
 
@@ -80,7 +80,7 @@ Redis是一个键值数据库，键一般是String类型，值的类型多种多
   
   **Time complexity**: $O(1)$.
 
-### 3. String命令
+### 1.3 String类型
 
 String是字符串类型，是Redis中最简单的存储类型。根据字符串的格式不同，可以分为3类：string普通字符串，int整数类型，float浮点类型。
 
@@ -99,7 +99,7 @@ String是字符串类型，是Redis中最简单的存储类型。根据字符串
 
   **Time complexity**: $O(1)$.
 
-- **SETNX**: 当键不存在时设置键对应的string类型的值
+- **SETNX** *deprecated*: 当键不存在时设置键对应的string类型的值
 
   ```redis
   SETNX key value
@@ -107,7 +107,7 @@ String是字符串类型，是Redis中最简单的存储类型。根据字符串
 
   **Time complexity**: $O(1)$.
 
-- **SETEX**: 设置键对应的string类型的值及过期时间，键不存在时创建键值对
+- **SETEX** *deprecated*: 设置键对应的string类型的值及过期时间，键不存在时创建键值对
 
   ```redis
   SETEX key seconds value
@@ -153,17 +153,17 @@ String是字符串类型，是Redis中最简单的存储类型。根据字符串
 
   An error is returned if the key contains a value of the wrong type or contains a string that can not be represented as integer. **This operation is limited to 64 bit signed integers**.
 
-  **Time complexity**: $O(1)$
+  **Time complexity**: $O(1)$.
 
   **Note**:  Redis stores integers in their integer representation, so for string values that actually hold an integer, there is no overhead for storing the string representation of the integer.
 
-- **INCRBY**: 将键对应的整数值增加特定值，键不存在时使用 0 作为初始值
+- **INCRBY**: 将键对应的整数值增加指定值，键不存在时使用 0 作为初始值
 
   ```redis
   INCRBY key increment
   ```
 
-  **Time complexity**: $O(1)$
+  **Time complexity**: $O(1)$.
 
 - **INCRBYFLOAT**: 将键对应的浮点值增加特定值，键不存在时则使用 0 作为初始值
 
@@ -178,5 +178,187 @@ String是字符串类型，是Redis中最简单的存储类型。根据字符串
 
   Both the value already contained in the string key and the increment argument can be optionally provided in exponential notation. **The precision of the output is fixed at 17 digits** after the decimal point regardless of the actual internal precision of the computation.
 
-  **Time complexity**: $O(1)$
+  **Time complexity**: $O(1)$.
 
+### 1.4 Hash类型
+
+在存储对象时，string类型是将对象序列化成JSON字符串后存储，因此对某个字段的修改很不方便。Hash类型可以将对象中的每个字段独立存储，方便对单个字段增删改查。
+
+- **HSET**: 创建或修改hash中字段的值
+
+  ```redis
+  HSET key field value [field value ...]
+  ```
+
+  This command overwrites the values of specified fields that exist in the hash. If key doesn't exist, a new key holding a hash is created.
+
+  **Time complexity**: $O(1)$ for each field/value pair added.
+
+- **HGET**: 返回hash中字段的值
+
+  ```redis
+  HGET key field
+  ```
+
+  **Time complexity**: $O(1)$.
+
+- **HMSET** *deprecated*: 设置多个字段的值
+
+  ```redis
+  HMSET key field value [field value ...]
+  ```
+
+  **Time complexity**: $O(N)$ where $N$ is the number of fields being set.
+
+- **HMGET**: 返回hash中多个字段的值
+
+  ```redis
+  HMGET key field [field ...]
+  ```
+
+  For every `field` that does not exist in the hash, a `nil` value is returned. Because non-existing keys are treated as empty hashes, running `HMGET` against a non-existing `key` will return a list of `nil` values.
+
+  **Time complexity**: $O(N)$ where $N$ is the number of fields being requested.
+
+- **HGETALL**: 返回键对应hash的所有字段和值
+
+  ```redis
+  HGETALL key
+  ```
+
+  In the returned value, every field name is followed by its value, so the length of the reply is twice the size of the hash.
+
+  **Time complexity**: $O(N)$ where $N$ is the size of the hash.
+
+- **HKEYS**: 返回键对应hash的所有字段名
+
+  ```redis
+  HKEYS key
+  ```
+
+  **Time complexity**: $O(N)$ where $N$ is the size of the hash.
+
+- **HINCRBY**：将hash中字段的整数值增加指定值
+
+  ```redis
+  HINCRBY key field increment
+  ```
+
+  If `key` does not exist, a new key holding a hash is created. If `field` does not exist the value is set to `0` before the operation is performed. The range of values supported by `HINCRBY` is limited to 64 bit signed integers.
+
+  **Time complexity**: $O(1)$.
+
+- **HSETNX**: 仅当字段不存在时，设置字段的值
+
+  ```redis
+  HSETNX key field value
+  ```
+
+  Sets `field` in the hash stored at `key` to `value`, only if `field` does not yet exist. If `key` does not exist, a new key holding a hash is created. If `field` already exists, this operation has no effect.
+
+  **Time complexity**: $O(1)$.
+
+### 1.5 List类型
+
+TODO: command forList
+
+- LPUSH
+- LPOP
+- RPUSH
+- RPOP
+- LRANGE
+- BLPOP
+- BRPOP
+
+### 1.6 Set类型
+
+TODO: command for Set
+
+- SADD
+- SREM
+- SCARD
+- SISMEMBER
+- SINTER
+
+### 1.7 SortedSet类型
+
+TODO: command for SortedSet
+
+- ZADD
+- ZREM
+- ZSCORE
+- ZRANK
+- ZCOUNT
+- ZINCRBY
+- ZRANGE
+- ZRANGEBYSCORE
+- ZDIFF
+- ZINTER
+- ZUNION
+
+
+
+## 2. Jedis
+
+### 2.1 Jedis快速开始程序
+
+引入Jedis依赖
+
+```xml
+<dependency>
+    <groupId>redis.clients</groupId>
+    <artifactId>jedis</artifactId>
+    <version>5.0.0</version>
+</dependency>
+```
+
+引入单元测试JUnit依赖
+
+```xml
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter</artifactId>
+    <version>5.10.2</version>
+    <scope>test</scope>
+</dependency>
+```
+
+创建Jedis客户端对象
+
+```Java
+private static Jedis jedis;
+
+@BeforeAll
+static void setUp() {
+    String host = "192.168.1.158";
+    int port = 6379;
+    // 建立连接
+    jedis = new Jedis(host, port);
+    // 登录认证
+    jedis.auth("password");
+    // 选择库
+    jedis.select(0);
+}
+```
+
+数据库操作
+
+```Java
+@Test
+void testHash() {
+    jedis.hset("user:1", "name", "Alice");
+    jedis.hset("user:1", "age", "20");
+
+    Map<String, String> result = jedis.hgetAll("user:1");
+    System.out.println(result);
+}
+```
+
+关闭与Redis服务器的连接
+
+```Java
+@AfterAll
+static void tearDown() {
+    if (jedis != null) jedis.close();
+}
+```
