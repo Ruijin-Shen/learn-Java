@@ -413,7 +413,7 @@ static void tearDown() {
   
 - **释放锁**
 
-  Instead of releasing the lock with `DEL`, send a script that only removes the key if the the timeout didn't expire. This avoids that a client will try to release the lock after the expire time deleting the key created by another client that acquired the lock later.
+  Instead of releasing the lock with `DEL`, send a script that only removes the key if the the timeout was not modified. This avoids that a client will try to release the lock after the expire time deleting the key created by another client that acquired the lock later.
 
   // TODO: an example of unlock script
 
