@@ -413,13 +413,15 @@ static void tearDown() {
   
 - **释放锁**
 
-  In order to make this locking algorithm more robust, a client holding a lock should always check the timeout didn't expire before unlocking the key with `DEL` because client failures can be complex, not just crashing but also blocking a lot of time against some operations and trying to issue `DEL` after a lot of time (when the lock is already held by another client).
+  Instead of releasing the lock with `DEL`, send a script that only removes the key if the the timeout didn't expire. This avoids that a client will try to release the lock after the expire time deleting the key created by another client that acquired the lock later.
 
-  注：在分布式环境中，一个客户端可能因为某种原因（比如网络延迟）在锁已经超时后才发送DEL命令，而此时锁可能已经被其他客户端获取，这样就会错误地删除了其他客户端的锁。
+  // TODO: an example of unlock script
 
-### 3.2 使用Redlock算法实现分布式锁
+### 3.2 使用`SET`和Lua脚本实现分布式锁
 
-The above pattern is discouraged in favor of **the Redlock algorithm** which is only a bit more complex to implement, but offers better guarantees and is fault tolerant.
 
-### 3.3 使用`SET`和Lua脚本实现分布式锁
+
+### 3.3 使用Redlock算法实现分布式锁
+
+The above patterns are discouraged in favor of **the Redlock algorithm** which is only a bit more complex to implement, but offers better guarantees and is fault tolerant.
 
