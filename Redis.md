@@ -145,6 +145,16 @@ String是字符串类型，是Redis中最简单的存储类型。根据字符串
 
   **Time complexity**: $O(N)$ where $N$ is the number of keys to retrieve.
 
+- **GETSET**: 原子性地设置键的值对并返回旧值
+
+  ```redis
+  GETSET key value
+  ```
+
+  Returns an error when `key` exists but does not hold a string value. Any previous time to live associated with the key is discarded on successful `SET` operation.
+
+  **Time complexity**: $O(1)$.
+
 - **INCR**: 将键对应的整数值加一，键不存在时使用 0 作为初始值
 
   ```redis
@@ -362,3 +372,54 @@ static void tearDown() {
     if (jedis != null) jedis.close();
 }
 ```
+
+## 3. 分布式锁
+
+### 3.1 使用`SETNX`和`GETSET`实现分布式锁
+
+- **获取锁**
+
+  `SETNX` can be used, and was historically used, as a locking primitive. For example, to acquire the lock of the key `foo`, the client could try the following:
+
+  ```redis
+  SETNX lock.foo <current Unix time + lock timeout + 1>
+  ```
+
+  If `SETNX` returns `1` the client acquired the lock, setting the `lock.foo` key to the Unix time at which the lock should no longer be considered valid. The client will later use `DEL lock.foo` in order to release the lock.
+
+  If `SETNX` returns `0` the key is already locked by some other client. We can either return to the caller if it's a non blocking lock, or enter a loop retrying to hold the lock until we succeed or some kind of timeout expires.
+
+- **释放超时锁**
+
+  If the timestamp is less than or equal to the current Unix time the lock is no longer valid.
+
+  - Client C1 crashed after holding the lock.
+
+  - C2 sends `SETNX lock.foo` in order to acquire the lock.
+
+  - The crashed client C1 still holds it, so Redis will reply with `0` to C2.
+
+  - C2 sends `GET lock.foo` to check if the lock expired. If it is not, it will sleep for some time and retry from the start.
+
+  - Instead, if the lock is expired because the Unix time at `lock.foo` is older than the current Unix time, C2 tries to perform：
+
+    ```redis
+    GETSET lock.foo <current Unix timestamp + lock timeout + 1>
+    ```
+
+  - Because of the `GETSET` semantic, C2 can check if the old value stored at key is still an expired timestamp. If it is, the lock was acquired.
+  
+  - If another client, for instance C3, was faster than C2 and acquired the lock with the `GETSET` operation, the C2 `GETSET` operation will return a non-expired timestamp. C2 will simply restart from the first step. Note that even if C2 set the key a bit a few seconds in the future this is not a problem.
+  
+- **释放锁**
+
+  In order to make this locking algorithm more robust, a client holding a lock should always check the timeout didn't expire before unlocking the key with `DEL` because client failures can be complex, not just crashing but also blocking a lot of time against some operations and trying to issue `DEL` after a lot of time (when the lock is already held by another client).
+
+  注：在分布式环境中，一个客户端可能因为某种原因（比如网络延迟）在锁已经超时后才发送DEL命令，而此时锁可能已经被其他客户端获取，这样就会错误地删除了其他客户端的锁。
+
+### 3.2 使用Redlock算法实现分布式锁
+
+The above pattern is discouraged in favor of **the Redlock algorithm** which is only a bit more complex to implement, but offers better guarantees and is fault tolerant.
+
+### 3.3 使用`SET`和Lua脚本实现分布式锁
+
