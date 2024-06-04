@@ -162,12 +162,12 @@ public class Server {
     public static void main(String[] args) {
         try {
             TServerTransport serverTransport = new TServerSocket(9090);
-            UserService.Processor<UserServiceImpl> processor = new UserService.Processor<>(new UserServiceImpl());
             TBinaryProtocol.Factory protocolFactory = new TBinaryProtocol.Factory();
+            UserService.Processor<UserServiceImpl> processor = new UserService.Processor<>(new UserServiceImpl());
 
             TSimpleServer.Args targs = new TSimpleServer.Args(serverTransport);
-            targs.processor(processor);
             targs.protocolFactory(protocolFactory);
+            targs.processor(processor);
 
             // Simple single-threaded server for testing
             TServer server = new TSimpleServer(targs);
@@ -220,13 +220,46 @@ public class Client {
 }
 ```
 
+## 3. Thrift网络栈
+
+Thrift网络栈从下往上分别为：**传输层**（transport layer）、**协议层**（protocol layer）、 **处理器层**（processor layer）和**服务器层**（server layer）。
+
+- **传输层**负责读取和写入数据，定义了定义了数据如何在客户端和服务端之间传输（文件传输或网络传输）。
+
+- **协议层**定义了数据传输格式，负责传输数据的序列化和反序列化，如 JSON、XML、纯文本、二进制和紧凑二进制等。
+- **处理器层**由Thrift编译器生成，处理器从输入流读取数据，将处理委托给处理程序（由用户实现），并向输出流写入响应。
+- **服务器层**整合上述所有功能：创建传输、为传输创建输入/输出协议、基于输入/输出协议创建处理器、等待连接并将其交给处理器。
 
 
-## 3. 传输（Transport）
 
-传输层定义了数据如何在客户端和服务端之间传输。Thrift默认使用基于TCP/IP的流式传输。
+## 4. 传输层（Transport Layer）
+
+传输层定义了数据如何在客户端和服务端之间传输，Thrift默认使用基于TCP/IP的流式传输。
+
+//TODO: 传输层内容
 
 
 
-## 4. 协议（Protocol）
+## 5. 协议层（Protocol Layer）
 
+//TODO: 协议层内容
+
+
+
+## 6. 处理器层（Processor Layer)
+
+**处理器层**由Thrift编译器生成，处理器从输入流读取数据，将处理委托给处理程序（由用户实现），并向输出流写入响应。
+
+处理器层的接口如下：
+
+```Java
+public interface TProcessor {
+  public void process(TProtocol in, TProtocol out) throws TException;
+}
+```
+
+
+
+## 7. 服务器层（Server Layer)
+
+//TODO: 服务器层内容
