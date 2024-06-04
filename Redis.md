@@ -270,15 +270,65 @@ String是字符串类型，是Redis中最简单的存储类型。根据字符串
 
 ### 1.5 List类型
 
-TODO: command forList
+Redis的列表是用于存储字符串的链表，可用于实现栈和队列。
 
-- LPUSH
-- LPOP
-- RPUSH
-- RPOP
-- LRANGE
-- BLPOP
-- BRPOP
+- **LPUSH**:  从左侧将指定的元素插入到键对应的列表
+
+  ```redis
+  LPUSH key element [element ...]
+  ```
+
+  If `key` does not exist, it is created as empty list before performing the push operations. When `key` holds a value that is not a list, an error is returned.
+
+  It is possible to push multiple elements using a single command call just specifying multiple arguments at the end of the command. Elements are inserted one after the other to the head of the list, from the leftmost element to the rightmost element.
+
+  **Time complexity**: $O(N)$ where $N$ is the number of elements to push.
+
+- **LPOP**：从左侧删除并返回键对应列表的元素
+
+  ```redis
+  LPOP key [count]
+  ```
+
+  By default, the command pops a single element from the beginning of the list. When provided with the optional `count` argument, the reply will consist of up to `count` elements, depending on the list's length. **Deletes the list if the last element was poped**.
+
+  **Time complexity**: $O(N)$ where $N$ is the number of elements to pop.
+
+- **RPUSH**：从右侧将指定的元素插入到键对应的列表
+
+  ```redis
+  RPUSH key element [element ...]
+  ```
+
+  When specifying multiple arguments at the end of the command, elements are inserted one after the other to the tail of the list, from the leftmost element to the rightmost element. See `LPUSH` for more details.
+
+  **Time complexity**: $O(N)$ where $N$ is the number of elements to push.
+
+- **RPOP**: 从右侧删除并返回键对应列表的元素
+
+  ```redis
+  RPOP key [count]
+  ```
+
+  See `RPOP` for more details.
+
+  **Time complexity**: $O(N)$ where $N$ is the number of elements to pop.
+
+- **LRANGE**: 返回列表中指定范围的元素
+
+  ```redis
+  LRANGE key start stop
+  ```
+
+  The offsets `start` (included) and `stop` (**included**) are zero-based indexes, with `0` being the first element of the list (the head of the list), `1` being the next element and so on.
+
+  These offsets can also be negative numbers indicating offsets starting at the end of the list. For example, `-1` is the last element of the list, `-2` the penultimate, and so on. Out of range indexes will not produce an error. If `start` is larger than the end of the list, an empty list is returned. If `stop` is larger than the actual end of the list, Redis will treat it like the last element of the list.
+
+  **Time complexity**: $O(S + N)$ where $S$ is the distance of start offset from HEAD for small lists, from nearest end (HEAD or TAIL) for large lists; and N is the number of elements in the specified range.
+
+- **BLPOP**:
+
+- **BRPOP**:
 
 ### 1.6 Set类型
 
