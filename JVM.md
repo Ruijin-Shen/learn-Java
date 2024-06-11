@@ -14,10 +14,10 @@ JVM的功能：解释和运行、内存管理、以及即时编译。
 
 ### 1. 字节码文件的组成
 
-字节码文件（.class文件）的组要组成部分如下：
+字节码文件（.class文件）的主要组成部分如下：
 
-- **基础信息**：魔数（magic，0xCAFEBABE）、版本号（minor_version和major_version）、访问标志（access_flag）等、类索引（this_class）、父类索引（supper_class）等。
-- **常量池**（constant_pool）：字符串常量、类或接口名、字段名、方法名等。常量池中的数据都有一个编号，编号从1开始。在字段或者字节码指令中通过编号可以快速的找到对应的数据。在字节码指令中通过编号引用常量池的过程称之为**符号引用**。
+- **基础信息**：魔数（magic，0xCAFEBABE）、版本号（major_version和minor_version）、访问标志（access_flag）等、类索引（this_class）、父类索引（supper_class）等。
+- **常量池**（constant_pool）：字符串常量、类或接口名、字段名、方法名等。常量池中的数据都有一个编号，编号从1开始。在字段或者字节码指令中通过编号可以快速的找到对应的数据。在字节码指令中通过编号引用常量池的过程称为**符号引用**。
 - **接口**（interfaces）：当前类实现的接口列表。
 - **字段**（fields）：当前类或接口声明的字段信息。
 - **方法**（methods）：当前类或接口声明的方法信息以及字节码指令。
@@ -69,7 +69,7 @@ k += 1;
 - 访问一个类的静态变量或者静态方法，若变量是final修饰并且等号右边是常量不会触发初始化；
 - 调用Class.forName(String className)；
 - new一个该类的对象时；
-- 执行Main方法的当前类。
+- 执行main方法的当前类。
 
 clinit方法在特定的情况下不会出现：
 
@@ -98,11 +98,11 @@ clinit方法在特定的情况下不会出现：
 
 ##### 2.1.1 类加载器的分类
 
-类加载器分为两类，一类是Java虚拟机底层源代码实现的，一类是Java代码实现的。虚拟机底层源代码实现的类加载器（BootstrapClassLoader）加载程序运行时的基础类。Java代码实现的类加载器（ExtClassLoader，AppClassLoader，自定义类加载器）都继承自ClassLoader抽象类，用于加载Java中通用的类或者应用程序使用的类。
+类加载器分为两类，一类是Java虚拟机底层源代码实现的，一类是Java代码实现的。虚拟机底层源代码实现的类加载器（BootstrapClassLoader）加载程序运行时的基础类。Java代码实现的类加载器（ExtClassLoader，AppClassLoader，自定义类加载器）都继承自**ClassLoader抽象类**，用于加载Java中通用的类或者应用程序使用的类。
 
-**启动类加载器（BootstrapClassLoader）**是由Hotspot虚拟机提供的，使用C++编写的类加载器。**启动类加载器默认加载目录`/jre/lib`下的类文件**。若需通过启动类加载器加载用户jar包，可通过虚拟机参数`-Xbootclasspath/a:jar包目录/jar包名`进行拓展。
+**启动类加载器**（BootstrapClassLoader）是由Hotspot虚拟机提供的，使用C++编写的类加载器。**启动类加载器默认加载目录`/jre/lib`下的类文件**。若需通过启动类加载器加载用户jar包，可通过虚拟机参数`-Xbootclasspath/a:jar包目录/jar包名`进行拓展。
 
-**拓展类加载器（ExtClassLoader）**和**应用程序类加载器（AppClassLoader）**都是使用Java编写的类加载器。这两个类加载器是sun.misc.Launher的静态内部类，继承自URLClassLoader。**拓展类加载器默认加载目录`jre/lib/ext`下的类文件**。若需通过拓展类加载器加载用户jar包，可通过虚拟机参数`-Djava.ext.dirs=jar包目录`，这种方式会覆盖掉原始目录，可以用 ; （windows）或 : （macos/linux）追加上原始目录。**应用程序类加载器加载classpath下的类文件**。
+**拓展类加载器**（ExtClassLoader）和**应用程序类加载器**（AppClassLoader）都是使用Java编写的类加载器。这两个类加载器是sun.misc.Launher的静态内部类，继承自URLClassLoader。**拓展类加载器默认加载目录`jre/lib/ext`下的类文件**。若需通过拓展类加载器加载用户jar包，可通过虚拟机参数`-Djava.ext.dirs=jar包目录`，这种方式会覆盖掉原始目录，可以用 ; （windows）或 : （macos/linux）追加上原始目录。**应用程序类加载器加载classpath下的类文件**。
 
 ##### 2.1.2 使用代码主动加载类
 
@@ -236,9 +236,9 @@ public class BreakClassLoader extends ClassLoader{
     }
 
     public static void main(String[] args) throws Exception {
-        BreakClassLoader classLoader1 = new BreakClassLoader1();
-        classLoader1.setBasePath("");
-        Class<?> clazz1 = classLoader1.loadClass("com.example.A");
+        BreakClassLoader classLoader = new BreakClassLoader();
+        classLoader.setBasePath("");
+        Class<?> clazz1 = classLoader.loadClass("com.example.A");
      }
 }
 ```
