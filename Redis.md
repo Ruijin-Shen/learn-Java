@@ -270,7 +270,7 @@ String是字符串类型，是Redis中最简单的存储类型。根据字符串
 
 ### 1.5 List类型
 
-Redis的列表是用于存储字符串的链表，可用于实现栈和队列。
+Redis的列表是存储字符串的链表，可用于实现栈和队列。
 
 - **LPUSH**:  从左侧将指定的元素插入到键对应的列表
 
@@ -310,7 +310,7 @@ Redis的列表是用于存储字符串的链表，可用于实现栈和队列。
   RPOP key [count]
   ```
 
-  See `RPOP` for more details.
+  See `LPOP` for more details.
 
   **Time complexity**: $O(N)$ where $N$ is the number of elements to pop.
 
@@ -326,9 +326,33 @@ Redis的列表是用于存储字符串的链表，可用于实现栈和队列。
 
   **Time complexity**: $O(S + N)$ where $S$ is the distance of start offset from HEAD for small lists, from nearest end (HEAD or TAIL) for large lists; and N is the number of elements in the specified range.
 
-- **BLPOP**:
+- **BLPOP**: 阻塞版`LPOP`
 
-- **BRPOP**:
+  ```redis
+  BLPOP key [key ...] timeout
+  ```
+
+  It is the blocking version of `LPOP` because it blocks the connection when there are no elements to pop from any of the given lists.
+
+  When `BLPOP` is called, if at least one of the specified keys contains a non-empty list, an element is popped from the head of the list and returned to the caller together with the `key` it was popped from.  An element is popped from the head of the first list that is non-empty, with the given keys being checked in the order that they are given.
+
+  If none of the specified keys exist, `BLPOP` blocks the connection until another client performs an `LPUSH` or `RPUSH` operation against one of the keys. Once new data is present on one of the lists, the client returns with the name of the key unblocking it and the popped value.
+
+  When `BLPOP` causes a client to block and a non-zero timeout is specified, the client will unblock returning a `nil` multi-bulk value when the specified timeout has expired without a push operation against at least one of the specified keys.
+
+  **The timeout argument is interpreted as a double value specifying the maximum number of seconds to block. A timeout of zero can be used to block indefinitely.**
+
+  **Time complexity**: $O(N)$ where $N$ is the number of provided keys.
+
+- **BRPOP**: 阻塞版`RPOP`
+
+  ```redis
+  BRPOP key [key ...] timeout
+  ```
+
+  See `BLPOP` for more details.
+
+  **Time complexity**: $O(N)$ where $N$ is the number of provided keys.
 
 ### 1.6 Set类型
 
