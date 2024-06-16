@@ -94,8 +94,8 @@ String是字符串类型，是Redis中最简单的存储类型。根据字符串
 
   The `SET` command supports a set of options that modify its behavior:
 
-  - `NX` -- Only set the key if it does not already exist.
-  - `XX` -- Only set the key if it already exists.
+  - **NX** -- Only set the key if it does not already exist.
+  - **XX** -- Only set the key if it already exists.
 
   **Time complexity**: $O(1)$.
 
@@ -356,7 +356,7 @@ Redis的列表是存储字符串的链表，可用于实现栈和队列。
 
 ### 1.6 Set类型
 
-Redis的集是唯一字符串的无序集合。
+Redis的集是唯一字符串成员的无序集合。
 
 - **SADD**: 将指定的成员添加到键对应的集中
 
@@ -436,19 +436,40 @@ Redis的集是唯一字符串的无序集合。
 
 ### 1.7 SortedSet类型
 
-TODO: command for SortedSet
+Redis的有序集是唯一字符串成员按分数排序的有序集合。
 
-- ZADD
-- ZREM
-- ZSCORE
-- ZRANK
-- ZCOUNT
-- ZINCRBY
-- ZRANGE
-- ZRANGEBYSCORE
-- ZDIFF
-- ZINTER
-- ZUNION
+- **ZADD**: 将指定的成员和分数添加到键对应的有序集中
+
+  ```redis
+  ZADD key [NX | XX] [GT | LT] [CH] [INCR] score member [score member
+    ...]
+  ```
+
+  If a specified member is already a member of the sorted set, the score is updated and the element reinserted at the right position to ensure the correct ordering. If `key` does not exist, a new sorted set with the specified members as sole members is created, like if the sorted set was empty. If the key exists but does not hold a sorted set, an error is returned.
+
+  **The score values should be the string representation of a double precision floating point number. `+inf` and `-inf` values are valid values as well.**
+
+  ZADD supports a list of options, specified after the name of the key and before the first score argument. Options are:
+
+  - **XX** -- Only update elements that already exist. Don't add new elements.
+  - **NX** -- Only add new elements. Don't update already existing elements.
+  - **LT** -- Only update existing elements if the new score is **less than** the current score. This flag doesn't prevent adding new elements.
+  - **GT** -- Only update existing elements if the new score is **greater than** the current score. This flag doesn't prevent adding new elements.
+  - **CH** -- Modify the return value from the number of new elements added, to the total number of elements changed (CH is an abbreviation of *changed*). Changed elements are **new elements added** and elements already existing for which **the score was updated**. So elements specified in the command line having the same score as they had in the past are not counted. **Note: normally the return value of `ZADD` only counts the number of new elements added**.
+  - **INCR** -- When this option is specified `ZADD` acts like `ZINCRBY`. Only one score-element pair can be specified in this mode.
+
+  **Time complexity**: $O(log(N))$ for each item added, where $N$ is the number of elements in the sorted set.
+
+- **ZREM**: 
+- **ZSCORE**: 
+- **ZRANK**: 
+- **ZCOUNT**: 
+- **ZINCRBY**: 
+- **ZRANGE**: 
+- **ZRANGEBYSCORE**: 
+- **ZDIFF**: 
+- **ZINTER**: 
+- **ZUNION**: 
 
 
 
