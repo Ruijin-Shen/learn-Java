@@ -56,14 +56,14 @@ Redis是一个键值数据库，键一般是String类型，值的类型多种多
 
   After the timeout has expired, the key will automatically be deleted. A key with an associated timeout is often said to be **volatile** in Redis terminology. The timeout will only be cleared by commands that delete or overwrite the contents of the key, including `DEL`, `SET`, and `GETSET` commands. This means that all the operations that conceptually alter the value stored at the key without replacing it with a new one will leave the timeout untouched. For instance, incrementing the value of a key with `INCR`, pushing a new value into a list with `LPUSH`, or altering the field value of a hash with `HSET` are all operations that will leave the timeout untouched.
 
-  **The timeout can also be cleared, turning the key back into a persistent key, using the PERSIST command**.
+  **The timeout can also be cleared, turning the key back into a persistent key, using the `PERSIST` command**.
 
   The `EXPIRE` command supports a set of options:
 
-  - `NX` -- Set expiry only when the key has no expiry
-  - `XX` -- Set expiry only when the key has an existing expiry
-  - `GT` -- Set expiry only when the new expiry is greater than current one
-  - `LT` -- Set expiry only when the new expiry is less than current one
+  - **NX** -- Set expiry only when the key has no expiry
+  - **XX** -- Set expiry only when the key has an existing expiry
+  - **GT** -- Set expiry only when the new expiry is greater than current one
+  - **LT** -- Set expiry only when the new expiry is less than current one
 
   **Time complexity**: $O(1)$.
 
@@ -84,7 +84,7 @@ Redis是一个键值数据库，键一般是String类型，值的类型多种多
 
 String是字符串类型，是Redis中最简单的存储类型。根据字符串的格式不同，可以分为3类：string普通字符串，int整数类型，float浮点类型。
 
-- **SET**: 设置或重写一个string类型的键值对
+- **SET**: 设置或修改一个string类型的键值对
 
   ```redis
   SET key value [NX | XX] [GET] [EX seconds | PX milliseconds | EXAT unix-time-seconds | PXAT unix-time-milliseconds | KEEPTTL]
@@ -107,11 +107,13 @@ String是字符串类型，是Redis中最简单的存储类型。根据字符串
 
   **Time complexity**: $O(1)$.
 
-- **SETEX** *deprecated*: 设置键对应的string类型的值及过期时间，键不存在时创建键值对
+- **SETEX** *deprecated*: 设置键对应的string类型的值及过期时间
 
   ```redis
   SETEX key seconds value
   ```
+
+  Sets the string value and expiration time of a key. Creates the key if it doesn't exist.
 
   **Time complexity**: $O(1)$.
 
@@ -537,6 +539,43 @@ static void tearDown() {
     if (jedis != null) jedis.close();
 }
 ```
+
+### 2.2 Jedis连接池
+
+Jedis连接不是线程安全的，并且频繁地创建和销毁连接有性能损耗，推荐使用JedisPool连接池。使用`JedisPool`类的`getResource`方法从连接池中获取一个连接，使用`Jedis`类的`close`方法将连接归还给连接池。
+
+```Java
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+
+import java.time.Duration;
+
+public class JedisConnectionFactory {
+    private static final JedisPool jedisPool;
+
+    static {
+        JedisPoolConfig poolConfig = new JedisPoolConfig();
+        poolConfig.setMaxTotal(8);
+        poolConfig.setMaxIdle(8);
+        poolConfig.setMinIdle(0);
+        poolConfig.setMaxWait(Duration.ofMillis(1000));
+
+        jedisPool = new JedisPool(poolConfig,
+                "192.168.1.158", 6379,
+                1000,
+                "password");
+
+        Runtime.getRuntime().addShutdownHook(new Thread(jedisPool::close));
+    }
+
+    public static Jedis getJedis() {
+        return jedisPool.getResource();
+    }
+}
+```
+
+
 
 ## 3. 分布式锁
 
