@@ -356,13 +356,83 @@ Redis的列表是存储字符串的链表，可用于实现栈和队列。
 
 ### 1.6 Set类型
 
-TODO: command for Set
+Redis的集是唯一字符串的无序集合。
 
-- SADD
-- SREM
-- SCARD
-- SISMEMBER
-- SINTER
+- **SADD**: 将指定的成员添加到键对应的集中
+
+  ```redis
+  SADD key member [member ...]
+  ```
+
+  Specified members that are already a member of this set are ignored. If `key` does not exist, a new set is created before adding the specified members. An error is returned when the value stored at `key` is not a set.
+
+  **Time complexity**: $O(N)$ where $N$ is the number of members to be added.
+
+- **SREM**: 从键对应的集中删除指定的成员
+
+  ```redis
+  SREM key member [member ...]
+  ```
+
+  **Specified members that are not a member of this set are ignored**. If `key` does not exist, it is treated as an empty set and this command returns `0`. An error is returned when the value stored at `key` is not a set.
+
+  **Time complexity**: $O(N)$ where $N$ is the number of members to be removed.
+
+- **SCARD**: 返回集的元素个数
+
+  ```redis
+  SCARD key
+  ```
+
+  **Time complexity**: $O(1)$.
+
+- **SISMEMBER**: 判断成员是否属于集
+
+  ```redis
+  SISMEMBER key member
+  ```
+
+  Returns `1` if `member` is a member of the set stored at `key`, otherwise `0`.
+
+  **Time complexity**: $O(1)$.
+
+- **SMEMBERS**: 返回集的所有成员
+
+  ```redis
+  SMEMBERS key
+  ```
+
+  **Time complexity**: $O(N)$ where $N$ is the set cardinality.
+
+- **SINTER**: 返回多个集的交集
+
+  ```redis
+  SINTER key [key ...]
+  ```
+
+  Returns the members of the set resulting from the intersection of all the given sets.
+
+  **Time complexity**: $O(N*M)$ worst case where $N$ is the cardinality of the smallest set and $M$ is the number of sets.
+
+- **SUNION**: 返回多个集的交集
+
+  ```redis
+  SUNION key [key ...]
+  ```
+
+  Returns the members of the set resulting from the union of all the given sets.
+
+  **Time complexity**: $O(N)$ where $N$ is the total number of elements in all given sets.
+
+- **SDIFF**: 返回多个集的差集
+
+  ```redis
+  SDIFF key [key ...]
+  ```
+
+  Returns the members of the set resulting from the **difference between the first set and all the successive sets**.
+
+  **Time complexity**: $O(N)$ where $N$ is the total number of elements in all given sets.
 
 ### 1.7 SortedSet类型
 
@@ -487,9 +557,8 @@ static void tearDown() {
   
 - **释放锁**
 
-  Instead of releasing the lock with `DEL`, send a script that only removes the key if the the timeout was not modified. This avoids that a client will try to release the lock after the expire time deleting the key created by another client that acquired the lock later.
+  Instead of releasing the lock with `DEL`, send a script that only removes the key if the the timeout was not modified. This avoids that a client will try to release the lock after the expire time deleting the key created by another client that acquired the lock later. See next section for a more robust and flexible implementation.
 
-  // TODO: an example of unlock script
 
 ### 3.2 使用`SET`和Lua脚本实现分布式锁
 
