@@ -188,7 +188,7 @@ public class GlobalExceptionHandler {
 
 **@Transactional**注解使得当前这个方法执行开始之前开启事务，方法执行完毕之后提交事务。如果在这个方法执行的过程当中出现了异常，就会进行事务的回滚操作。@Transactional注解书写位置：**方法**，当前方法交给Spring进行事务管理；**类**，当前类中所有的方法都交由Spring进行事务管理；**接口**，接口下所有的实现类当中所有的方法都交给Spring进行事务管理。
 
-可以在application.yml配置文件中开启事务管理日志，这样就可以在控制台看到和事务相关的日志信息了
+可以在application.yml配置文件中开启事务管理日志，这样就可以在控制台看到和事务相关的日志信息了。
 
 ```yaml
 logging:
