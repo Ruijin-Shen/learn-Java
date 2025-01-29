@@ -1,3 +1,28 @@
+## JavaScript
+
+### 1. JavaScript引入方式
+
+- **内部脚本**：将JS代码定义在HTML页面中，位于`<script></script>`标签之间，一般会把脚本置于`<body>`元素的底部，可改善显示速度。
+- **外部脚本**：将JS代码定义在外部JS文件中，通过`<script src="..."></script>`引入到HTML页面中。
+
+### 2. 基础语法
+
+JavaScript是弱类型语言，使用`var`声明函数作用域变量，使用`let`声明块作用域变量，使用`const`声明块作用域常量。
+
+JavaScript中的数据类型分为原始类型和引用类型。原始类型有`number`，`string`，`boolean`，`null`，`undefined`，可以使用`typeof`运算符获取数据类型。
+
+JavaScript有如下运算符：算术运算符（`+`，`-`，`*`，`/`，`%`，`**`，`++`，`--`），赋值运算符（`=`，`+=`，`-=`，`*=`，`/=`，`%=`），比较运算符（`<`，`>`，`<=`，`>=`，`!=`，`!==`，`==`，`===`），逻辑运算符（`&&`，`||`，`!`）以及三元运算符`?:`。
+
+JavaScript有`if...else`，`switch`，`for`，`while`，`do..while`等控制语句。
+
+JavaScript通过`function`关键字定义函数， `function add(a, b) { return a + b }`或`let`
+
+` add = function(a, b) { return a + b }`。
+
+JavaScript中Array对象用于定义数组，`let arr = new Array(1, 2, 3, 4)`或`let arr = [1,2,3,4]`，数组长度可变。 属性`legnth`用于设置或获取数组中元素的数量；方法`forEach`遍历数组中的每个有值的元素，并调用一次传入的函数；方法`push`添加新元素至数组末尾；方法`splice`添加、删除或替换数组中的元素。
+
+
+
 ## Maven
 
 Maven基于**项目对象模型**（POM，Project Object Model）用于管理和构建java项目。Maven能够：（**依赖管理**）方便快捷地管理项目依赖的资源，避免版本冲突问题；（**统一项目结构**）提供标准、统一的项目结构；（**项目构建**）Maven提供了标准的跨平台的自动化项目构建方式。
