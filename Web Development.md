@@ -19,7 +19,7 @@ JavaScript通过`function`关键字定义函数， `function add(a, b) { return 
 
 ` add = function(a, b) { return a + b }`。
 
-JavaScript中Array对象用于定义数组，`let arr = new Array(1, 2, 3, 4)`或`let arr = [1,2,3,4]`，数组长度可变。 属性`legnth`用于设置或获取数组中元素的数量；方法`forEach`遍历数组中的每个有值的元素，并调用一次传入的函数；方法`push`添加新元素至数组末尾；方法`splice`添加、删除或替换数组中的元素。
+JavaScript中Array对象用于定义数组，`let arr = new Array(1, 2, 3, 4)`或`let arr = [1,2,3,4]`，数组长度可变。 属性`legnth`用于设置或获取数组中元素的数量；方法`forEach`用于遍历数组中的每个有值的元素，并调用一次传入的函数；方法`push`用于添加新元素至数组末尾；方法`splice`用于添加、删除或替换数组中的元素。
 
 
 
@@ -37,7 +37,40 @@ Maven基于**项目对象模型**（POM，Project Object Model）用于管理和
 
 - 构建生命周期/阶段(Build lifecycle & phases)：完成标准化构建流程。
 
-![24032301](./resources/24032301.png)
+<img src="./resources/24032301.png" alt="24032301" style="zoom:67%;" />
+
+#### 1.2 引入和排除依赖
+
+Maven通过如下方式引入依赖，指定依赖的groupId、artifactId和version。
+
+```XML
+<dependencies>
+    <dependency>
+        <groupId></groupId>
+        <artifactId></artifactId>
+      	<version></version>
+    </dependency>
+</dependencies>
+```
+
+Maven通过如下方式排除依赖，指定依赖的的groupId和artifactId。
+
+```XML
+<exclusions>
+    <exclusion>
+        <groupId></groupId>
+        <artifactId></artifactId>
+    </exclusion>
+</exclusions>
+```
+
+### 2. 继承
+
+ 继承描述两个工程间的关系,子工程可以继承父工程中的配置信息。
+
+
+
+
 
 ## 过滤器和拦截器
 
@@ -257,7 +290,7 @@ logging:
 
 - **串行化**（Serializable）：最高的隔离级别，完全避免了脏读、不可重复读、幻读。 会对记录加上读写锁，在多个事务对这条记录进行读写操作时，如果发生了读写冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行，这种隔离级别会导致性能下降。
 
-@Transactional注解的**isolation**属性用于指定事务的传播行为（ISOLATION_DEFAULT，ISOLATION_READ_UNCOMMITTED，ISOLATION_READ_COMMITTED，ISOLATION_REPEATABLE_READ，ISOLATION_SERIALIZABLE）。
+`@Transactional`注解的**isolation**属性用于指定事务的传播行为（`ISOLATION_DEFAULT`，`ISOLATION_READ_UNCOMMITTED`，`ISOLATION_READ_COMMITTED`，`ISOLATION_REPEATABLE_READ`，`ISOLATION_SERIALIZABLE`）。
 
 
 
