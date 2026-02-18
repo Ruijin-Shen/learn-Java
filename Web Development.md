@@ -187,7 +187,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
        //注册自定义拦截器对象，设置拦截器拦截的请求路径，/** 表示拦截所有请求
-        registry.addInterceptor(loginCheckInterceptor).addPathPatterns("/**");
+        registry.addInterceptor(loginCheckInterceptor).addPathPatterns("/**").order(1);
     }
 }
 ```
