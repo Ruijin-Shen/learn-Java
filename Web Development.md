@@ -240,6 +240,12 @@ public class GlobalExceptionHandler {
 }
 ```
 
+#### 3.2 @ResponseStatus注解
+
+@ResponseStatus注解用于标记方法或异常类，指定应该返回的Http状态码和原因。当处理器方法被调用时，该状态码会应用到Http响应，但不会覆盖通过其他方式设置的状态信息，例如ResponseEntity或"redirect:"。控制器类、异常处理类、异常处理方法也可以使用@ResponseStatus注解。
+
+在异常类上使用此注解时，将使用HttpServeletResponse.sendError方法。调用HttpServeletResponse.sendError方法时，会认为相应已完成，不应再向其写入任何内容，Servelet容器通常会写入HTML错误页面，因此在REST API对异常类使用@ResponseStatus注解是不合适的，建议使用ResponseEntity作为返回类型。
+
 
 
 ## Spring事务管理
