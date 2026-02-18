@@ -87,7 +87,6 @@ Maven通过如下方式排除依赖，指定依赖的的groupId和artifactId。
 - destroy方法： 当我们关闭服务器的时候，它会自动的调用销毁方法destroy，这个销毁方法也只会被调用一次。
 
 ```Java
-@WebFilter(urlPatterns = "/*")
 public class LoginFilter implements Filter{
     @Override //初始化方法, 只调用一次
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -105,9 +104,24 @@ public class LoginFilter implements Filter{
 }
 ```
 
-在定义完Filter之后，Filter其实并不会生效，还需要完成Filter的配置，需要在Filter类上添加一个**@WebFilter注解**，并指定属性**urlPatterns**，通过这个属性指定过滤器要拦截哪些请求。
+在定义完Filter之后，Filter其实并不会生效，还需要完成Filter的配置，需要在Filter类上添加一个**@WebFilter注解**，并指定属性**urlPatterns**，通过这个属性指定过滤器要拦截哪些请求。当我们在Filter类上面加了@WebFilter注解之后，接下来我们还需要在启动类上面加上一个**@ServletComponentScan**注解，通过这个@ServletComponentScan注解来开启SpringBoot项目对于Servlet组件的支持。
 
-当我们在Filter类上面加了@WebFilter注解之后，接下来我们还需要在启动类上面加上一个**@ServletComponentScan**注解，通过这个@ServletComponentScan注解来开启SpringBoot项目对于Servlet组件的支持。
+Spring Boot推荐优先使用**FilterRegistrationBean**进行配置，基本用法如下：
+
+```Java
+@Configuration
+public class FilterConfig {
+    @Bean
+    public FilterRegistrationBean<MyFilter> myFilter() {
+        FilterRegistrationBean<MyFilter> registration =  new FilterRegistrationBean<>();
+        registration.setFilter(new MyFilter());
+        registration.addUlrPatterns("/*");
+        registration.setOrder(1);
+        registration.setName("myFilter");
+        return registration;
+    }
+}
+```
 
 #### 1.2 过滤器拦截路径
 
